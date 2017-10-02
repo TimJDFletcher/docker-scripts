@@ -9,26 +9,34 @@ IMG_BUILD     := ${NAME}:tmp
 IMG           := ${NAME}:${TAG}
 LATEST        := ${NAME}:latest
 
-all: build test tag push
+all: pull build test tag push
 
-envtest:
-	@echo ${IMG}
+# Pull the latest version for build speed ups, and the tag we are building to avoid dups
+pull:
+	-@docker pull ${LATEST}
+	-@docker push ${IMG}
 
+# Build a container with a temp tag to avoid clashes
 build:
-	@docker pull ${LATEST}
 	@docker build -t ${IMG_BUILD} .
 
 # Test your docker container works, this example is for logstash
 test:
-	@docker run --rm -it ${IMG_BUILD} -t
+	@docker run --rm ${IMG_BUILD} -t
 
+# Tag your container with the version tag and "latest"
 tag:
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
 
+# Push your container out to the registery
 push:
 	@docker push ${IMG}
 	@docker push ${LATEST}
 
 login:
 	  @docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
+# Delete any container images we have built
+clean:
+	-@docker rmi ${LATEST} ${IMG} ${IMG_BUILD}
