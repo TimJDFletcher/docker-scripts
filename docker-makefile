@@ -1,0 +1,21 @@
+MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_PATH  := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
+REPO_URI      := docker-registry.laterooms.io:5000
+NAME          := ${REPO_URI}/${CURRENT_PATH}
+TAG           := $$(git rev-parse --short HEAD)
+IMG           := ${NAME}:${TAG}
+LATEST        := ${NAME}:latest
+
+test:
+	@echo ${IMG}
+
+build:
+	@docker build -t ${IMG} .
+	    @docker tag ${IMG} ${LATEST}
+
+push:
+	  @docker push ${IMG}
+	    @docker push ${LATEST}
+
+login:
+	  @docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
