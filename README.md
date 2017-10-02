@@ -2,9 +2,9 @@
 
 These are some helpful docker scripts for working with Dockerfiles and building them.
 
-There is a makefile (`docker-makefile`) included here now that does the same job as these scripts, copy it you docker repo and then run make in the repo.
+There is a makefile (`docker-makefile`) included here now that does the same job as these scripts, copy it you docker repo with the filename `Makefile` and then run make in your repo.
 
-You make need to tweak the container name and the test parms for your docker container
+You may need to tweak the container name and the test parms for your docker container.
 
 There are 3 scripts:
 
