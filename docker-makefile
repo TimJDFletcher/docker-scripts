@@ -1,13 +1,13 @@
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_PATH  := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 REPO_URI      := docker-registry.laterooms.io:5000
-NAME          := ${REPO_URI}/${CURRENT_PATH}
+NAME          := ${CURRENT_PATH}
 # Set your version tag here, examples for git short tag and date included
 # TAG          := $(shell date +%Y%m%d%H%M%S)
 TAG           := $$(git rev-parse --short HEAD)
-IMG_BUILD     := ${NAME}:tmp
-IMG           := ${NAME}:${TAG}
-LATEST        := ${NAME}:latest
+IMG_BUILD     := ${REPO_URI}/${NAME}:tmp
+IMG           := ${REPO_URI}/${NAME}:${TAG}
+LATEST        := ${REPO_URI}/${NAME}:latest
 
 all: pull build test tag push
 
@@ -22,9 +22,11 @@ build:
 
 # Test your docker container works, this example is for logstash
 test:
-	@docker run --rm ${IMG_BUILD} -t
+	@docker run --name "${NAME}_${TAG}" ${IMG_BUILD} -t
+# clean up post test
+	@docker rm "${NAME}_${TAG}" ${IMG_BUILD}
 
-# Tag your container with the version tag and "latest"
+# Tag your container with the version and "latest"
 tag:
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
@@ -40,3 +42,4 @@ login:
 # Delete any container images we have built
 clean:
 	-@docker rmi ${LATEST} ${IMG} ${IMG_BUILD}
+	-@docker rm "${NAME}_${TAG}"
