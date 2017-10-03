@@ -41,5 +41,6 @@ login:
 
 # Delete any container images we have built
 clean:
+	-@docker images -q "*/${NAME}" | xargs docker image rm
 	-@docker rmi ${LATEST} ${IMG} ${IMG_BUILD}
-	-@docker rm "${NAME}_${TAG}"
+	-@docker rm ${NAME}_${TAG}
