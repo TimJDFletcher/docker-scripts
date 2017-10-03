@@ -5,7 +5,7 @@ NAME          := ${CURRENT_PATH}
 # Set your version tag here, examples for git short tag and date included
 # TAG          := $(shell date +%Y%m%d%H%M%S)
 TAG           := $$(git rev-parse --short HEAD)
-IMG_BUILD     := ${REPO_URI}/${NAME}:tmp
+IMG_BUILD     := ${NAME}:tmp
 IMG           := ${REPO_URI}/${NAME}:${TAG}
 LATEST        := ${REPO_URI}/${NAME}:latest
 
@@ -14,7 +14,7 @@ all: pull build test tag push
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
 	-@docker pull ${LATEST}
-	-@docker push ${IMG}
+	-@docker pull ${IMG}
 
 # Build a container with a temp tag to avoid clashes
 build:
@@ -26,7 +26,7 @@ test:
 # clean up post test
 	@docker rm "${NAME}_${TAG}" ${IMG_BUILD}
 
-# Tag your container with the version and "latest"
+# Tag your container with the version tag and "latest"
 tag:
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
