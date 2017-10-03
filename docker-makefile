@@ -22,9 +22,9 @@ build:
 
 # Test your docker container works, this example is for logstash
 test:
-	@docker run --name "${NAME}_${TAG}" ${IMG_BUILD} -t
+	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} -t
 # clean up post test
-	@docker rm "${NAME}_${TAG}" ${IMG_BUILD}
+	@docker rm ${NAME}_${TAG}
 
 # Tag your container with the version tag and "latest"
 tag:
