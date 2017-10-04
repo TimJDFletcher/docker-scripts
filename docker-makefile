@@ -1,5 +1,5 @@
-MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-CURRENT_PATH  := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
+# Get the current path for the container name
+CURRENT_PATH  := $(notdir $(patsubst %/,%,$(CURDIR)))
 
 # the registry we are targetting, example of pushing to the global docker registry
 # REPO_URI     := tlrg/
@@ -10,7 +10,7 @@ NAME          := ${CURRENT_PATH}
 
 # Set your version tag here, examples for git short tag and date below
 # TAG          := $(shell date +%Y%m%d%H%M%S)
-TAG           := $$(git rev-parse --short HEAD)
+TAG           := $(shell git rev-parse --short HEAD)
 
 # Temp name to build against to avoid name clashes
 IMG_BUILD     := ${NAME}:tmp
@@ -33,7 +33,7 @@ build:
 # Test your docker container works, this example is for logstash 
 test:
 	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} -t
-# and clean up post test
+# Clean up post test if successful, to allow for docker logs
 	@docker rm ${NAME}_${TAG}
 
 # Tag your container with the version tag and latest
