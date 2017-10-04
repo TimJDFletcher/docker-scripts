@@ -1,12 +1,17 @@
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_PATH  := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
+# the registry we are targetting
 REPO_URI      := docker-registry.laterooms.io:5000
+# Sets the name of the container being built, in this case the dir name we are in
 NAME          := ${CURRENT_PATH}
 # Set your version tag here, examples for git short tag and date included
 # TAG          := $(shell date +%Y%m%d%H%M%S)
 TAG           := $$(git rev-parse --short HEAD)
+# Temp name to build against to avoid name clashes
 IMG_BUILD     := ${NAME}:tmp
+# Full final tag name to push to
 IMG           := ${REPO_URI}/${NAME}:${TAG}
+# Also push to latest 
 LATEST        := ${REPO_URI}/${NAME}:latest
 
 all: pull build test tag push
@@ -26,7 +31,7 @@ test:
 # clean up post test
 	@docker rm ${NAME}_${TAG}
 
-# Tag your container with the version tag and "latest"
+# Tag your container with the version tag and latest
 tag:
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
@@ -36,6 +41,7 @@ push:
 	@docker push ${IMG}
 	@docker push ${LATEST}
 
+# If you need to login to your registry
 login:
 	  @docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
