@@ -23,8 +23,8 @@ all: pull build test tag push
 
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
-	-@docker pull ${LATEST} && (echo "docker tag already exists"; exit 1)
-	-@docker pull ${IMG}
+	-@docker pull ${LATEST}
+	@docker pull ${IMG} && exit 1 || exit 0
 
 # Build a container with a temp tag to avoid clashes
 build:
@@ -45,7 +45,7 @@ tag:
 push:
 	@docker push ${IMG}
 	@docker push ${LATEST}
-	@echo Pushed to ${IMG}
+	@echo ${NAME} built and pushed to ${IMG}
 
 # If you need to login to your registry
 login:
