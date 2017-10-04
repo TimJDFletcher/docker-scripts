@@ -1,17 +1,22 @@
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_PATH  := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
-# the registry we are targetting
+
+# the registry we are targetting, example of pushing to the global docker registry
+# REPO_URI     := tlrg/
 REPO_URI      := docker-registry.laterooms.io:5000
+
 # Sets the name of the container being built, in this case the dir name we are in
 NAME          := ${CURRENT_PATH}
+
 # Set your version tag here, examples for git short tag and date included
 # TAG          := $(shell date +%Y%m%d%H%M%S)
 TAG           := $$(git rev-parse --short HEAD)
+
 # Temp name to build against to avoid name clashes
 IMG_BUILD     := ${NAME}:tmp
-# Full final tag name to push to
+
+# Full final tag name to push to as well as latest
 IMG           := ${REPO_URI}/${NAME}:${TAG}
-# Also push to latest 
 LATEST        := ${REPO_URI}/${NAME}:latest
 
 all: pull build test tag push
@@ -25,10 +30,9 @@ pull:
 build:
 	@docker build -t ${IMG_BUILD} .
 
-# Test your docker container works, this example is for logstash
+# Test your docker container works, this example is for logstash and clean up post test
 test:
 	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} -t
-# clean up post test
 	@docker rm ${NAME}_${TAG}
 
 # Tag your container with the version tag and latest
@@ -43,7 +47,7 @@ push:
 
 # If you need to login to your registry
 login:
-	  @docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
+	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
 # Delete any container images we have built
 clean:
