@@ -31,6 +31,11 @@ logs:
 	@docker logs ${NAME}_${TAG}
 .PHONY: logs
 
+# Run the temp container
+run:
+	@docker run --rm -it ${IMG_BUILD} ${CMD} 
+.PHONY: run
+
 # Delete any container images we have built
 clean:
 	-@docker images -q "*/${NAME}" | xargs docker image rm
