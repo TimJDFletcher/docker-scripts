@@ -43,10 +43,14 @@ run:
 
 # Delete any container images we have built
 clean:
-	-@docker images -q "*/${NAME}" | xargs docker image rm
-	-@docker rmi ${IMG_BUILD}
 	-@docker rm ${NAME}_${TAG}
+	-@docker rmi ${IMG_BUILD}
 .PHONY: clean
+
+# Delete any container images we depend on
+cleanall: clean
+	-@docker images -q "*/${NAME}" | xargs docker image rm
+.PHONY: allclean
 
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
