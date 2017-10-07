@@ -21,6 +21,23 @@ LATEST        := ${REPO_URI}/${NAME}:latest
 
 all: pull build test tag push
 
+# If you need to login to your registry
+login:
+	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
+.PHONY: login
+
+# Show logs for the temp container
+logs:
+	@docker logs ${NAME}_${TAG}
+.PHONY: logs
+
+# Delete any container images we have built
+clean:
+	-@docker images -q "*/${NAME}" | xargs docker image rm
+	-@docker rmi ${IMG_BUILD}
+	-@docker rm ${NAME}_${TAG}
+.PHONY: clean
+
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
 	-@docker pull ${LATEST}
@@ -46,13 +63,3 @@ push:
 	@docker push ${IMG}
 	@docker push ${LATEST}
 	@echo ${NAME} built and pushed to ${IMG}
-
-# If you need to login to your registry
-login:
-	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
-
-# Delete any container images we have built
-clean:
-	-@docker images -q "*/${NAME}" | xargs docker image rm
-	-@docker rmi ${IMG_BUILD}
-	-@docker rm ${NAME}_${TAG}
