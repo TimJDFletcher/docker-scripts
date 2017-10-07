@@ -15,3 +15,16 @@ There are 3 scripts:
 * `dockerfile-deploy.sh` pushs a built docker container with a date based tag to our repo
 
 The default name for the container is $PWD
+
+## Makefile notes
+
+Built be @timjdfletcher after seeing something in DevOps weekly.
+
+Original post: https://container-solutions.com/tagging-docker-images-the-right-way/
+
+Another docker and make gist: https://gist.github.com/mpneuried/0594963ad38e68917ef189b4e6a269db
+
+Makefile notes:
+
+* http://www.alexeyshmalko.com/2014/7-things-you-should-know-about-make/
+* http://kirste.userpage.fu-berlin.de/chemnet/use/info/make/make_4.html
