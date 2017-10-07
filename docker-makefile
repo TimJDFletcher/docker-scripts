@@ -57,9 +57,9 @@ pull:
 build:
 	@docker build -t ${IMG_BUILD} .
 
-# Test your docker container works, this example is for logstash 
+# Test your docker container works 
 test:
-	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} -t
+	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} ${TEST_CMD}
 # Clean up post test if successful, to allow for docker logs
 	@docker rm ${NAME}_${TAG}
 
