@@ -19,6 +19,11 @@ IMG_BUILD     := ${NAME}:tmp
 IMG           := ${REPO_URI}/${NAME}:${TAG}
 LATEST        := ${REPO_URI}/${NAME}:latest
 
+# Default commands
+CMD           := bash
+# Command to run to test the container, example for logstash
+TEST_CMD      := -t
+
 all: pull build test tag push
 
 # If you need to login to your registry
