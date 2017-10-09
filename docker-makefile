@@ -80,5 +80,5 @@ push: tag
 	@echo ${NAME} built and pushed to ${IMG}
 ifdef GO_PIPELINE_NAME
 	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
-	@echo -n ${IMG} > ${TAG_FILE}
+	@echo ${IMG} > ${TAG_FILE}
 endif
