@@ -24,7 +24,7 @@ CMD           := bash
 # Command to run to test the container, example for logstash
 TEST_CMD      := -t
 
-all: pull build test tag push
+all: push
 
 # If you need to login to your registry
 login:
@@ -37,8 +37,8 @@ logs:
 .PHONY: logs
 
 # Run the temp container
-run:
-	@docker run --rm -it ${IMG_BUILD} ${CMD} 
+run: 
+	@docker run -it ${IMG_BUILD} ${CMD} 
 .PHONY: run
 
 # Delete any container images we have built
@@ -58,22 +58,22 @@ pull:
 	@docker pull ${IMG} || exit 0 && echo Tag already exists upstream at ${IMG}, exiting ; exit 1 
 
 # Build a container with a temp tag to avoid clashes
-build:
+build: pull
 	@docker build -t ${IMG_BUILD} .
 
 # Test your docker container works 
-test:
+test: build
 	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} ${TEST_CMD}
 # Clean up post test if successful, to allow for docker logs
 	@docker rm ${NAME}_${TAG}
 
 # Tag your container with the version tag and latest
-tag:
+tag: test
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
 
 # Push your container out to the registery
-push:
+push: tag
 	@docker push ${IMG}
 	@docker push ${LATEST}
 	@echo ${NAME} built and pushed to ${IMG}
