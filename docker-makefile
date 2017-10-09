@@ -18,6 +18,7 @@ IMG_BUILD     := ${NAME}:tmp
 # Full final tag name to push to as well as latest
 IMG           := ${REPO_URI}/${NAME}:${TAG}
 LATEST        := ${REPO_URI}/${NAME}:latest
+TAG_FILE      := image_full_tag.txt
 
 # Default commands
 CMD           := bash
@@ -77,3 +78,7 @@ push: tag
 	@docker push ${IMG}
 	@docker push ${LATEST}
 	@echo ${NAME} built and pushed to ${IMG}
+ifdef GO_PIPELINE_NAME
+	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
+	@echo -n ${IMG} > ${TAG_FILE}
+endif
