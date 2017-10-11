@@ -1,16 +1,19 @@
 # Get the current path for the container name
 CURRENT_PATH  := $(notdir $(patsubst %/,%,$(CURDIR)))
 
-# the registry we are targetting, example of pushing to the global docker registry
+# the registry we are targetting, this is the standard LR one
+REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.laterooms.io:5000)
+# This is example of pushing to the global docker hub
 # REPO_URI     := tlrg/
-REPO_URI      := docker-registry.laterooms.io:5000
 
-# Sets the name of the container being built, in this case the dir name we are in
-NAME          := ${CURRENT_PATH}
+# Sets the name of the container being built.
+# if IMAGE_NAME is undefined use the dir name we are in
+NAME          := $(or $(IMAGE_NAME),${CURRENT_PATH})
 
 # Set your version tag here, examples for git short tag and date below
+# Defaults to GO_PIPELINE_LABEL
 # TAG          := $(shell date +%Y%m%d%H%M%S)
-TAG           := $(shell git rev-parse --short HEAD)
+TAG           := $(or $(GO_PIPELINE_LABEL),$(shell git rev-parse --short HEAD))
 
 # Temp name to build against to avoid name clashes
 IMG_BUILD     := ${NAME}:tmp
@@ -20,14 +23,15 @@ IMG           := ${REPO_URI}/${NAME}:${TAG}
 LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
-# Default commands
+# Default commands for testing and running our docker container
 CMD           := bash
-# Command to run to test the container, example for logstash
-TEST_CMD      := -t
+# Command passed to Docker to test the container
+TEST_CMD      := /bin/true
 
+# When the bare command 'make' is run what do we do?
 all: push
 
-# If you need to login to your registry
+# If you need to login to Dockerhub
 login:
 	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
 .PHONY: login
@@ -37,7 +41,8 @@ logs:
 	@docker logs ${NAME}_${TAG}
 .PHONY: logs
 
-# Run the temp container
+# Run the temp container, to run a different command call make thus:
+# make run CMD=mycommand
 run: 
 	@docker run -it ${IMG_BUILD} ${CMD} 
 .PHONY: run
@@ -51,7 +56,7 @@ clean:
 # Delete any container images we depend on
 cleanall: clean
 	-@docker images -q "*/${NAME}" | xargs docker image rm
-.PHONY: allclean
+.PHONY: cleanall
 
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
@@ -82,3 +87,4 @@ ifdef GO_PIPELINE_NAME
 	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
 	@echo ${IMG} > ${TAG_FILE}
 endif
+
