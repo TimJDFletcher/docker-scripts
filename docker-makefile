@@ -1,12 +1,11 @@
-# Get the current path for the container name
-CURRENT_PATH  := $(notdir $(patsubst %/,%,$(CURDIR)))
-
 # the registry we are targetting, this is the standard LR one
 REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.laterooms.io:5000)
 # This is example of pushing to the global docker hub
 # REPO_URI     := tlrg/
 
 # Sets the name of the container being built.
+# Get the current path for the container name
+CURRENT_PATH  := $(notdir $(patsubst %/,%,$(CURDIR)))
 # if IMAGE_NAME is undefined use the dir name we are in
 NAME          := $(or $(IMAGE_NAME),${CURRENT_PATH})
 
@@ -25,8 +24,8 @@ TAG_FILE      := image_full_tag.txt
 
 # Default commands for testing and running our docker container
 CMD           := bash
-# Command passed to Docker to test the container
-TEST_CMD      := /bin/true
+# Command passed to Docker to test the container, note defaults to /bin/true currently
+TEST_CMD      := $(or $(TEST_CMD),/bin/true)
 
 # When the bare command 'make' is run what do we do?
 all: push
