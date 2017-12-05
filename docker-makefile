@@ -19,6 +19,7 @@ IMG_BUILD     := ${NAME}:tmp
 
 # Full final tag name to push to as well as latest
 IMG           := ${REPO_URI}/${NAME}:${TAG}
+BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD)
 LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
@@ -81,6 +82,7 @@ tag: test
 push: tag
 	@docker push ${IMG}
 	@docker push ${LATEST}
+	@docker push ${BRANCH}
 	@echo ${NAME} built and pushed to ${IMG}
 ifdef GO_PIPELINE_NAME
 	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
