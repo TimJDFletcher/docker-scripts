@@ -77,6 +77,7 @@ test: build
 tag: test
 	@docker tag ${IMG_BUILD} ${IMG}
 	@docker tag ${IMG_BUILD} ${LATEST}
+	@docker tag ${IMG_BUILD} ${BRANCH}
 
 # Push your container out to the registery
 push: tag
