@@ -4,17 +4,16 @@ import sys
 import jinja2
 from jinja2 import Environment, FileSystemLoader
 
-image_dir = 'images'
-image_filename = 'image_full_tag.txt'
-docker_tags = {}
-filenames = {}
-
 def parse_cmdline():
+    filenames = {}
     filenames["inputfile"] = sys.argv[1]
     filenames["outputfile"] = sys.argv[1].rsplit(".", 1 )[0]
     return filenames
 
 def load_tags():
+    docker_tags = {}
+    image_dir = 'images'
+    image_filename = 'image_full_tag.txt'
     for dirname in os.listdir(image_dir):
         if os.path.isdir(image_dir + "/" + dirname):
             with open(image_dir + "/" + dirname + "/" + image_filename, 'r') as file:
