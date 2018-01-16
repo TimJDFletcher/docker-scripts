@@ -6,7 +6,7 @@ There is a makefile (`docker-makefile`) included here now that does the same job
 
 You may need to tweak the container name and the test parms for your docker container.
 
-There are 3 scripts:
+There are 3 scripts in the dockerfile-scripts dir:
 
 * `dockerfile-build.sh` this builds a dockerfile in the current directory and tags it correctly
 
@@ -23,6 +23,10 @@ Built be @timjdfletcher after seeing something in DevOps weekly.
 Original post: https://container-solutions.com/tagging-docker-images-the-right-way/
 
 Another docker and make gist: https://gist.github.com/mpneuried/0594963ad38e68917ef189b4e6a269db
+
+Add this to your bash aliases to make it easy to use:
+
+`alias dockermake="make -f $HOME/Projects/tools/docker-scripts/docker-makefile"`
 
 Makefile notes:
 
