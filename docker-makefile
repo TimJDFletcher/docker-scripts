@@ -1,7 +1,7 @@
 # the registry we are targetting, this is the standard LR one
-REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.laterooms.io:5000)
+# REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.laterooms.io:5000)
 # This is example of pushing to the global docker hub
-# REPO_URI     := tlrg/
+REPO_URI     := timjdfletcher/
 
 # Sets the name of the container being built.
 # Get the current path for the container name
@@ -29,7 +29,7 @@ CMD           := bash
 TEST_CMD      := $(or $(TEST_CMD),/bin/true)
 
 # When the bare command 'make' is run what do we do?
-all: push
+all: tag
 
 # If you need to login to Dockerhub
 login:
