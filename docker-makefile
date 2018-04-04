@@ -25,8 +25,12 @@ TAG_FILE      := image_full_tag.txt
 
 # Default commands for testing and running our docker container
 CMD           := bash
-# Command passed to Docker to test the container, note defaults to /bin/true currently
-TEST_CMD      := $(or $(TEST_CMD),/bin/true)
+# Command passed to Docker to test the container
+TESTS         := $(patsubst %.c,%.o,$(wildcard tests/*))
+
+define docker_test
+docker run --rm --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $(1))
+endef
 
 # When the bare command 'make' is run what do we do?
 all: tag
@@ -62,16 +66,17 @@ cleanall: clean
 pull:
 	-@docker pull ${LATEST}
 	@docker pull ${IMG} || exit 0 && echo Tag already exists upstream at ${IMG}, exiting ; exit 1 
+.PHONY: pull
 
 # Build a container with a temp tag to avoid clashes
 build: pull
 	@docker build -t ${IMG_BUILD} .
+.PHONY: build
 
 # Test your docker container works 
 test: build
-	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} ${TEST_CMD}
-# Clean up post test if successful, to allow for docker logs
-	@docker rm ${NAME}_${TAG}
+	$(foreach test,$(TESTS),$(call docker_test,$(test)))
+.PHONY: test
 
 # Tag your container with the version tag and latest
 tag: test
