@@ -1,4 +1,4 @@
-# the registry we are targetting, this is the standard LR one
+# The registry we are targetting
 # REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.laterooms.io:5000)
 # This is example of pushing to the global docker hub
 REPO_URI     := timjdfletcher
@@ -26,11 +26,7 @@ TAG_FILE      := image_full_tag.txt
 # Default commands for testing and running our docker container
 CMD           := bash
 # Command passed to Docker to test the container
-TESTS         := $(patsubst %.c,%.o,$(wildcard tests/*))
-
-define docker_test
-docker run --rm --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $(1))
-endef
+TESTS         := $(addsuffix .test, $(patsubst %.c,%.o,$(wildcard tests/*)))
 
 # When the bare command 'make' is run what do we do?
 all: tag
@@ -74,9 +70,13 @@ build: pull
 .PHONY: build
 
 # Test your docker container works 
-test: build
-	$(foreach test,$(TESTS),$(call docker_test,$(test)))
-.PHONY: test
+test: build $(TESTS)
+.PHONY: tests/%
+
+%.test : %
+	@echo Running test $<
+	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $<)
+	@docker rm  ${NAME}_${TAG}
 
 # Tag your container with the version tag and latest
 tag: test
