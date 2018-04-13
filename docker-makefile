@@ -15,7 +15,7 @@ IMG_BUILD     := ${NAME}:tmp
 
 # Full final tag name to push to as well as latest
 IMG           := ${REPO_URI}/${NAME}:${TAG}
-BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD)
+BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD | sed -e 's,/,_,g')
 LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
@@ -30,40 +30,40 @@ all: tag
 # If you need to login to Dockerhub
 login:
 	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
-	.PHONY: login
+.PHONY: login
 
 # Show logs for the temp container
 logs:
 	@docker logs ${NAME}_${TAG}
-	.PHONY: logs
+.PHONY: logs
 
 # Run the temp container, to run a different command call make thus:
 # make run CMD=mycommand
 run: 
 	@docker run -it ${IMG_BUILD} ${CMD} 
-	.PHONY: run
+.PHONY: run
 
 # Delete any container images we have built
 clean:
 	-@docker rm ${NAME}_${TAG}
 	-@docker rmi ${IMG_BUILD}
-	.PHONY: clean
+.PHONY: clean
 
 # Delete any container images we depend on
 cleanall: clean
 	-@docker images -q "*/${NAME}" | xargs docker image rm
-	.PHONY: cleanall
+.PHONY: cleanall
 
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
 	-@docker pull ${LATEST}
 	@docker pull ${IMG} || exit 0 && echo Tag already exists upstream at ${IMG}, exiting ; exit 1 
-	.PHONY: pull
+.PHONY: pull
 
 # Build a container with a temp tag to avoid clashes
 build: pull
 	@docker build -t ${IMG_BUILD} .
-	.PHONY: build
+.PHONY: build
 
 # Test your docker container works 
 test: build $(TESTS)
@@ -73,7 +73,7 @@ test: build $(TESTS)
 	@echo Running test $<
 	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $<)
 	@docker rm  ${NAME}_${TAG}
-	.PHONY: %.test
+.PHONY: %.test
 
 # Tag your container with the version tag and latest
 tag: test
@@ -87,7 +87,7 @@ push: tag
 	@docker push ${LATEST}
 	@docker push ${BRANCH}
 	@echo ${NAME} built and pushed to ${IMG}
-	ifdef GO_PIPELINE_NAME
+ifdef GO_PIPELINE_NAME
 	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
 	@echo ${IMG} > ${TAG_FILE}
 endif
