@@ -18,7 +18,7 @@ IMG_BUILD     := ${NAME}:tmp
 
 # Full final tag name to push to as well as latest
 IMG           := ${REPO_URI}/${NAME}:${TAG}
-BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD)
+BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD | sed -e 's,/,_,g')
 LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
