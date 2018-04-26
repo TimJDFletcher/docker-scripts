@@ -1,8 +1,5 @@
 # The registry we are targetting
-# REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.example.com:5000)
-# This is example of pushing to the global docker hub
-REPO_URI        := timjdfletcher
-
+REPO_URI      := $(or $(DOCKER_REGISTRY),docker-registry.example.com:5000)
 # Sets the name of the container being built, get the current path for the container name
 CURRENT_PATH  := $(notdir $(patsubst %/,%,$(CURDIR)))
 # if IMAGE_NAME is undefined use the dir name we are in
