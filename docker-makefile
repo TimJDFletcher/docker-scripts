@@ -20,7 +20,7 @@ LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
 # Default commands for running our docker container
-CMD           := bash
+CMD           := 
 # Commands passed to Docker to test the container
 TESTS         := $(addsuffix .test, $(patsubst %.c,%.o,$(wildcard tests/*)))
 
@@ -40,7 +40,7 @@ logs:
 # Run the temp container, to run a different command call make thus:
 # make run CMD=mycommand
 run: 
-	@docker run -it ${IMG_BUILD} ${CMD} 
+	@docker run -it ${IMG} ${CMD} 
 .PHONY: run
 
 # Delete any container images we have built
