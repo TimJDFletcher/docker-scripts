@@ -20,6 +20,8 @@ The default name for the container is $PWD
 
 Built be @timjdfletcher after seeing something in DevOps weekly.
 
+Lightning talk about the docker make here: https://www.youtube.com/watch?v=QFnQTHHhjvA&index=3&list=PLENDK8Dct_tpJAIbi5a_qtaQ9tal0Kwfb&t=0s
+
 Original post: https://container-solutions.com/tagging-docker-images-the-right-way/
 
 Another docker and make gist: https://gist.github.com/mpneuried/0594963ad38e68917ef189b4e6a269db
