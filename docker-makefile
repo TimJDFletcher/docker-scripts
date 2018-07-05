@@ -19,6 +19,9 @@ BRANCH        := ${REPO_URI}/${NAME}:$(shell git rev-parse --abbrev-ref HEAD | s
 LATEST        := ${REPO_URI}/${NAME}:latest
 TAG_FILE      := image_full_tag.txt
 
+# What command do we use to build with
+DOCKER_CMD    := $(or $(DOCKER_CMD),docker)
+
 # Default commands for running our docker container
 CMD           := 
 # Commands passed to Docker to test the container
@@ -29,40 +32,40 @@ all: tag
 
 # If you need to login to Dockerhub
 login:
-	@docker log -u ${DOCKER_USER} -p ${DOCKER_PASS}
+	@${DOCKER_CMD} log -u ${DOCKER_USER} -p ${DOCKER_PASS}
 .PHONY: login
 
 # Show logs for the temp container
 logs:
-	@docker logs ${NAME}_${TAG}
+	@${DOCKER_CMD} logs ${NAME}_${TAG}
 .PHONY: logs
 
 # Run the temp container, to run a different command call make thus:
 # make run CMD=mycommand
 run: 
-	@docker run -it ${IMG} ${CMD} 
+	@${DOCKER_CMD} run -it ${IMG} ${CMD} 
 .PHONY: run
 
 # Delete any container images we have built
 clean:
-	-@docker rm ${NAME}_${TAG}
-	-@docker rmi ${IMG_BUILD}
+	-@${DOCKER_CMD} rm ${NAME}_${TAG}
+	-@${DOCKER_CMD} rmi ${IMG_BUILD}
 .PHONY: clean
 
 # Delete any container images we depend on
 cleanall: clean
-	-@docker images -q "*/${NAME}" | xargs docker image rm
+	-@${DOCKER_CMD} images -q "*/${NAME}" | xargs docker image rm
 .PHONY: cleanall
 
 # Pull the latest version for build speed ups, and the tag we are building to avoid dups
 pull:
-	-@docker pull ${LATEST}
-	@docker pull ${IMG} || exit 0 && echo Tag already exists upstream at ${IMG}, exiting ; exit 1 
+	-@${DOCKER_CMD} pull ${LATEST}
+	@${DOCKER_CMD} pull ${IMG} || exit 0 && echo Tag already exists upstream at ${IMG}, exiting ; exit 1 
 .PHONY: pull
 
 # Build a container with a temp tag to avoid clashes
 build: pull
-	@docker build -t ${IMG_BUILD} .
+	@${DOCKER_CMD} build -t ${IMG_BUILD} .
 .PHONY: build
 
 # Test your docker container works 
@@ -71,21 +74,21 @@ test: build $(TESTS)
 
 %.test : %
 	@echo Running test $<
-	@docker run --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $<)
-	@docker rm  ${NAME}_${TAG}
+	@${DOCKER_CMD} run --name ${NAME}_${TAG} ${IMG_BUILD} $(shell cat $<)
+	@${DOCKER_CMD} rm  ${NAME}_${TAG}
 .PHONY: %.test
 
 # Tag your container with the version tag and latest
 tag: test
-	@docker tag ${IMG_BUILD} ${IMG}
-	@docker tag ${IMG_BUILD} ${LATEST}
-	@docker tag ${IMG_BUILD} ${BRANCH}
+	@${DOCKER_CMD} tag ${IMG_BUILD} ${IMG}
+	@${DOCKER_CMD} tag ${IMG_BUILD} ${LATEST}
+	@${DOCKER_CMD} tag ${IMG_BUILD} ${BRANCH}
 
 # Push your container out to the registery
 push: tag
-	@docker push ${IMG}
-	@docker push ${LATEST}
-	@docker push ${BRANCH}
+	@${DOCKER_CMD} push ${IMG}
+	@${DOCKER_CMD} push ${LATEST}
+	@${DOCKER_CMD} push ${BRANCH}
 	@echo ${NAME} built and pushed to ${IMG}
 ifdef GO_PIPELINE_NAME
 	$(info Running in a GoCD pipeline writing image details to ${TAG_FILE})
