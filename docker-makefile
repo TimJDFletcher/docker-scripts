@@ -65,7 +65,7 @@ pull:
 
 # Build a container with a temp tag to avoid clashes
 build: pull
-	@${DOCKER_CMD} build -t ${IMG_BUILD} .
+	@${DOCKER_CMD} build ${DOCKER_BUILD_ARGS} -t ${IMG_BUILD} .
 .PHONY: build
 
 # Test your docker container works 
