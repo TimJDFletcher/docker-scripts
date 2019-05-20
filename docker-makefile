@@ -66,6 +66,7 @@ pull:
 .PHONY: pull
 
 # Build a container with a temp tag to avoid clashes
+build: export DOCKER_BUILDKIT=1
 build: pull
 	@${DOCKER_CMD} build ${DOCKER_BUILD_ARGS} -t ${IMG_BUILD} .
 .PHONY: build
